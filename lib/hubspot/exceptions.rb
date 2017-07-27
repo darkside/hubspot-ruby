@@ -14,4 +14,6 @@ module Hubspot
   class MissingInterpolation < StandardError; end
   class ContactExistsError < RequestError; end
   class PropertyExistsError < RequestError; end
+  class ServerError < RequestError; end
+  class BadGateway  < RequestError; end
 end

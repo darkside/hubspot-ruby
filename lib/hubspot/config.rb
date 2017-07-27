@@ -5,6 +5,10 @@ module Hubspot
       attr_reader :base_url
       attr_reader :portal_id
 
+      def logger
+        @logger ||= Logger.new(STDOUT)
+      end
+
       def configure(config)
         config.stringify_keys!
         @hapikey = config["hapikey"]
