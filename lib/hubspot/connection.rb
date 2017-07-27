@@ -40,6 +40,14 @@ module Hubspot
       end
     end
 
+    def delete_json(path, params: {})
+      retrying_network_errors do
+        url = generate_url(path, params)
+        response = delete(url, format: :json)
+        handle_response(response)
+      end
+    end
+
     private
 
     def param_string(key,value)
@@ -76,9 +84,11 @@ module Hubspot
 
     def handle_response(response)
       log_request_and_response response
-      raise BadGateway.new(response)   if response.code == 502
-      raise ServerError.new(response)  if response.code >= 500
-      raise RequestError.new(response) unless response.success?
+      raise BadGateway.new(response)        if response.code == 502
+      raise ServerError.new(response)       if response.code >= 500
+      raise DuplicateResource.new(response) if response.code == 409
+      raise ResourceNotFound.new(response)  if response.code == 404
+      raise RequestError.new(response)  unless response.success?
       self.retries = 0 # reset retries if we had a success
       response.parsed_response
     end

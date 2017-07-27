@@ -10,10 +10,10 @@ module Hubspot
     end
   end
 
-  class ConfigurationError < StandardError; end
+  class ConfigurationError   < StandardError; end
   class MissingInterpolation < StandardError; end
-  class ContactExistsError < RequestError; end
-  class PropertyExistsError < RequestError; end
-  class ServerError < RequestError; end
-  class BadGateway  < RequestError; end
+  class DuplicateResource    < RequestError; end
+  class ResourceNotFound     < RequestError; end
+  class ServerError          < RequestError; end
+  class BadGateway           < RequestError; end
 end

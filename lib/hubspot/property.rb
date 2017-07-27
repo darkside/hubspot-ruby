@@ -8,12 +8,14 @@ module Hubspot
   # {http://developers.hubspot.com/docs/methods/contacts/get_properties}
   #
   class Property
+    delegate :camelize_hash, :underscore_hash, :hash_to_properties, :connection, :get_json,
+      :post_json, :put_json, :delete_json, to: :class
 
     # Class Methods
     class << self
-      delegate :camelize_hash, to: Utils
+      delegate :camelize_hash, :hash_to_properties, :underscore_hash, to: Utils
       delegate :connection, to: Hubspot
-      delegate :get_json, :post_json, :put_json, to: :connection
+      delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
 
       # Get all properties
       # {http://developers.hubspot.com/docs/methods/contacts/get_properties}
@@ -27,7 +29,7 @@ module Hubspot
       # Creates a new Property
       # {http://developers.hubspot.com/docs/methods/contacts/create_property}
       # @return [Hubspot::Property] the created property
-      # @raise [Hubspot::PropertyExistsError] if a property already exists with
+      # @raise [Hubspot::DuplicateResource] if a property already exists with
       #   the given name
       # @raise [Hubspot::RequestError] if the creation fails
       def create!(name, params = {})
@@ -39,16 +41,12 @@ module Hubspot
         params_with_name = camelize_hash(params_with_name)
 
         response = send(create_method, creation_path, body: params_with_name.to_json)
-
-        raise PropertyExistsError.new(resp, "#{self.name} already exists with name: #{name}") if response.code == 409
-        new(response.parsed_response)
+        new(response)
       end
 
       # Sometimes it's easier to delete things by name than instantiating them
       def destroy!(name)
-        url = Hubspot::Utils.generate_url(deletion_path, {name: name})
-        resp = HTTParty.delete(url, format: :json)
-        raise(Hubspot::RequestError.new(resp)) unless resp.success?
+        response = delete_json(deletion_path, params: { name: name})
         true
       end
 
@@ -91,7 +89,7 @@ module Hubspot
 
     def initialize(hash)
       # Transform hubspot keys into ruby friendly names
-      hash = Hubspot::Utils.underscore_hash(hash)
+      hash = underscore_hash(hash)
       # Assign anything we have an accessor for with the same name
       hash.each do |key, value|
         self.send(:"#{key}=", value) if self.respond_to?(:"#{key}=")

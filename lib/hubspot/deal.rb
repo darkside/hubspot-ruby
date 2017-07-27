@@ -30,7 +30,14 @@ module Hubspot
       @properties = Hubspot::Utils.properties_to_hash(response_hash["properties"])
     end
 
+    delegate :camelize_hash, :hash_to_properties, :connection, :get_json,
+      :post_json, :put_json, :delete_json, to: :class
+
     class << self
+      delegate :camelize_hash, :hash_to_properties, to: Utils
+      delegate :connection, to: Hubspot
+      delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
+
       # Creates a deal in hubspot
       # @raise [Hubspot::RequestError] if the response isn't a success
       # @return [Hubspot::Deal] the created deal
