@@ -20,7 +20,7 @@ module Hubspot
       :post_json, :put_json, :delete_json, to: :class
 
     class << self
-      delegate :camelize_hash, :hash_to_properties, to: Utils
+      delegate :camelize_hash, :hash_to_properties, :properties_to_hash, to: Utils
       delegate :connection, to: Hubspot
       delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
 
@@ -41,7 +41,7 @@ module Hubspot
       # @param email [String] the email of the contact to find
       # @return [Hubspot::Contact, nil] the contact found or nil
       def find_by_email(email)
-        params  = { contact_email: email }
+        params   = { contact_email: email }
         response = get_json(GET_CONTACT_BY_EMAIL_PATH, params: params)
         new(response)
       rescue ResourceNotFound
