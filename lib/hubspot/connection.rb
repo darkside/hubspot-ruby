@@ -4,7 +4,7 @@ module Hubspot
     HEADERS = { 'Content-Type' => 'application/json' }
     NETWORK_ERRORS = [ServerError, BadGateway]
 
-    delegate :logger, to: Config
+    delegate :logger, :sleep_on_network_errors?, :retry_on_network_errors?, to: Config
 
     attr_accessor :retries
 
@@ -67,11 +67,11 @@ module Hubspot
     def retrying_network_errors
       yield
     rescue *NETWORK_ERRORS => e
-      if self.retries < 3
+      if retry_on_network_errors? && self.retries < 3
         self.retries += 1
         logger.warn "Network error caught: #{e.inspect}"
         logger.warn "Sleeping and retrying..."
-        sleep self.retries
+        sleep self.retries if sleep_on_network_errors?
         retry
       else
         self.retries = 0 # reset retries
