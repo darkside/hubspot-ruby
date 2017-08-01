@@ -24,7 +24,7 @@ module Hubspot
     def post_json(path, params: {}, body:)
       retrying_network_errors do
         url = generate_url(path, params)
-        response = self.class.post(url, body: body, headers: HEADERS, format: :json)
+        response = self.class.post(url, body: body.to_json, headers: HEADERS, format: :json)
         handle_response(response)
       end
     end
@@ -32,7 +32,7 @@ module Hubspot
     def put_json(path, params: {}, body:)
       retrying_network_errors do
         url = generate_url(path, params)
-        response = self.class.put(url, body: body, headers: HEADERS, format: :json)
+        response = self.class.put(url, body: body.to_json, headers: HEADERS, format: :json)
         handle_response(response)
       end
     end

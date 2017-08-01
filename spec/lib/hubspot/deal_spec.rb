@@ -14,8 +14,8 @@ describe Hubspot::Deal do
     its (:deal_id) { should == 3 }
   end
 
-  describe ".create!", live: true do
-    # cassette "deal_create"
+  describe ".create!" do
+    cassette "deal_create"
     subject { Hubspot::Deal.create!(62515, [8954037], [27136], {}) }
     its(:deal_id)     { should_not be_nil }
     its(:portal_id)   { should eql 62515 }
