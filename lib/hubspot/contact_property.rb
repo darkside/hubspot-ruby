@@ -18,7 +18,7 @@ module Hubspot
 
       # Only for ContactProperties the creation is a put instead of a post (facepalm)
       def create_method
-        :put
+        :put_json
       end
 
       def creation_path

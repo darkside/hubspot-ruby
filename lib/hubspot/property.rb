@@ -8,27 +8,28 @@ module Hubspot
   # {http://developers.hubspot.com/docs/methods/contacts/get_properties}
   #
   class Property
+    delegate :camelize_hash, :underscore_hash, :hash_to_properties, :connection, :get_json,
+      :post_json, :put_json, :delete_json, to: :class
 
     # Class Methods
     class << self
+      delegate :camelize_hash, :hash_to_properties, :underscore_hash, to: Utils
+      delegate :connection, to: Hubspot
+      delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
+
       # Get all properties
       # {http://developers.hubspot.com/docs/methods/contacts/get_properties}
       # @return [Hubspot::PropertyCollection] the paginated collection of
       # properties
       def all(opts = {})
-        url = Hubspot::Utils.generate_url(collection_path, opts)
-        request = HTTParty.get(url, format: :json)
-
-        raise(Hubspot::RequestError.new(request)) unless request.success?
-
-        found = request.parsed_response
-        return found.map{|h| new(h) }
+        response = get_json(collection_path, opts)
+        response.map{|h| new(h) }
       end
 
       # Creates a new Property
       # {http://developers.hubspot.com/docs/methods/contacts/create_property}
       # @return [Hubspot::Property] the created property
-      # @raise [Hubspot::PropertyExistsError] if a property already exists with
+      # @raise [Hubspot::DuplicateResource] if a property already exists with
       #   the given name
       # @raise [Hubspot::RequestError] if the creation fails
       def create!(name, params = {})
@@ -37,27 +38,22 @@ module Hubspot
         # Merge in sensible defaults so we don't have to specify everything
         params_with_name.reverse_merge! default_creation_params
         # Transform keys to Hubspot's camelcase format
-        params_with_name = Hubspot::Utils.camelize_hash(params_with_name)
-        url  = Hubspot::Utils.generate_url(creation_path, {name: name})
-        resp = HTTParty.send(create_method, url, body: params_with_name.to_json, format: :json,
-          headers: {"Content-Type" => "application/json"})
-        raise(Hubspot::PropertyExistsError.new(resp, "#{self.name} already exists with name: #{name}")) if resp.code == 409
-        raise(Hubspot::RequestError.new(resp, "Cannot create #{self.name} with name: #{name}")) unless resp.success?
-        new(resp.parsed_response)
+        params_with_name = camelize_hash(params_with_name)
+
+        response = send(create_method, creation_path, body: params_with_name.to_json)
+        new(response)
       end
 
       # Sometimes it's easier to delete things by name than instantiating them
       def destroy!(name)
-        url = Hubspot::Utils.generate_url(deletion_path, {name: name})
-        resp = HTTParty.delete(url, format: :json)
-        raise(Hubspot::RequestError.new(resp)) unless resp.success?
+        response = delete_json(deletion_path, params: { name: name})
         true
       end
 
       protected
 
       def create_method
-        :post
+        :post_json
       end
 
       def collection_path
@@ -93,7 +89,7 @@ module Hubspot
 
     def initialize(hash)
       # Transform hubspot keys into ruby friendly names
-      hash = Hubspot::Utils.underscore_hash(hash)
+      hash = underscore_hash(hash)
       # Assign anything we have an accessor for with the same name
       hash.each do |key, value|
         self.send(:"#{key}=", value) if self.respond_to?(:"#{key}=")

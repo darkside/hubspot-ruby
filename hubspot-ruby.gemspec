@@ -5,15 +5,15 @@
 # stub: hubspot-ruby 0.1.7 ruby lib
 
 Gem::Specification.new do |s|
-  s.name = "hubspot-ruby"
+  s.name = "hubspot-ruby".freeze
   s.version = "0.1.7"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.require_paths = ["lib"]
-  s.authors = ["Andrew DiMichele"]
-  s.date = "2015-01-12"
-  s.description = "hubspot-ruby is a wrapper for the HubSpot REST API"
-  s.email = "hello@omadahealth.com"
+  s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
+  s.require_paths = ["lib".freeze]
+  s.authors = ["Andrew DiMichele".freeze]
+  s.date = "2017-07-27"
+  s.description = "hubspot-ruby is a wrapper for the HubSpot REST API".freeze
+  s.email = "hello@omadahealth.com".freeze
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -33,9 +33,12 @@ Gem::Specification.new do |s|
     "lib/hubspot/blog.rb",
     "lib/hubspot/config.rb",
     "lib/hubspot/contact.rb",
+    "lib/hubspot/contact_property.rb",
     "lib/hubspot/deal.rb",
+    "lib/hubspot/deal_property.rb",
     "lib/hubspot/exceptions.rb",
     "lib/hubspot/form.rb",
+    "lib/hubspot/property.rb",
     "lib/hubspot/topic.rb",
     "lib/hubspot/utils.rb",
     "lib/hubspot/version.rb",
@@ -66,6 +69,7 @@ Gem::Specification.new do |s|
     "spec/lib/hubspot-ruby_spec.rb",
     "spec/lib/hubspot/blog_spec.rb",
     "spec/lib/hubspot/config_spec.rb",
+    "spec/lib/hubspot/contact_property_spec.rb",
     "spec/lib/hubspot/contact_spec.rb",
     "spec/lib/hubspot/deal_spec.rb",
     "spec/lib/hubspot/form_spec.rb",
@@ -75,56 +79,58 @@ Gem::Specification.new do |s|
     "spec/spec_helper.rb",
     "spec/support/cassette_helper.rb"
   ]
-  s.homepage = "http://github.com/omadahealth/hubspot-ruby"
-  s.rubygems_version = "2.4.1"
-  s.summary = "hubspot-ruby is a wrapper for the HubSpot REST API"
+  s.homepage = "http://github.com/omadahealth/hubspot-ruby".freeze
+  s.rubygems_version = "2.6.11".freeze
+  s.summary = "hubspot-ruby is a wrapper for the HubSpot REST API".freeze
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activesupport>, [">= 3.0.0"])
-      s.add_runtime_dependency(%q<httparty>, [">= 0.10.0"])
-      s.add_development_dependency(%q<rspec>, [">= 0"])
-      s.add_development_dependency(%q<rr>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, ["< 1.10"])
-      s.add_development_dependency(%q<vcr>, [">= 0"])
-      s.add_development_dependency(%q<rdoc>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<simplecov>, [">= 0"])
-      s.add_development_dependency(%q<awesome_print>, [">= 0"])
-      s.add_development_dependency(%q<timecop>, [">= 0"])
-      s.add_development_dependency(%q<guard-rspec>, [">= 0"])
+      s.add_runtime_dependency(%q<activesupport>.freeze, [">= 3.0.0"])
+      s.add_runtime_dependency(%q<httparty>.freeze, [">= 0.10.0"])
+      s.add_development_dependency(%q<rspec>.freeze, [">= 0"])
+      s.add_development_dependency(%q<rspec-its>.freeze, [">= 0"])
+      s.add_development_dependency(%q<rr>.freeze, [">= 0"])
+      s.add_development_dependency(%q<webmock>.freeze, ["< 1.10"])
+      s.add_development_dependency(%q<vcr>.freeze, [">= 0"])
+      s.add_development_dependency(%q<rdoc>.freeze, [">= 0"])
+      s.add_development_dependency(%q<bundler>.freeze, [">= 0"])
+      s.add_development_dependency(%q<jeweler>.freeze, [">= 0"])
+      s.add_development_dependency(%q<simplecov>.freeze, [">= 0"])
+      s.add_development_dependency(%q<awesome_print>.freeze, [">= 0"])
+      s.add_development_dependency(%q<timecop>.freeze, [">= 0"])
+      s.add_development_dependency(%q<guard-rspec>.freeze, [">= 0"])
     else
-      s.add_dependency(%q<activesupport>, [">= 3.0.0"])
-      s.add_dependency(%q<httparty>, [">= 0.10.0"])
-      s.add_dependency(%q<rspec>, [">= 0"])
-      s.add_dependency(%q<rr>, [">= 0"])
-      s.add_dependency(%q<webmock>, ["< 1.10"])
-      s.add_dependency(%q<vcr>, [">= 0"])
-      s.add_dependency(%q<rdoc>, [">= 0"])
-      s.add_dependency(%q<bundler>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<simplecov>, [">= 0"])
-      s.add_dependency(%q<awesome_print>, [">= 0"])
-      s.add_dependency(%q<timecop>, [">= 0"])
-      s.add_dependency(%q<guard-rspec>, [">= 0"])
+      s.add_dependency(%q<activesupport>.freeze, [">= 3.0.0"])
+      s.add_dependency(%q<httparty>.freeze, [">= 0.10.0"])
+      s.add_dependency(%q<rspec>.freeze, [">= 0"])
+      s.add_dependency(%q<rspec-its>.freeze, [">= 0"])
+      s.add_dependency(%q<rr>.freeze, [">= 0"])
+      s.add_dependency(%q<webmock>.freeze, ["< 1.10"])
+      s.add_dependency(%q<vcr>.freeze, [">= 0"])
+      s.add_dependency(%q<rdoc>.freeze, [">= 0"])
+      s.add_dependency(%q<bundler>.freeze, [">= 0"])
+      s.add_dependency(%q<jeweler>.freeze, [">= 0"])
+      s.add_dependency(%q<simplecov>.freeze, [">= 0"])
+      s.add_dependency(%q<awesome_print>.freeze, [">= 0"])
+      s.add_dependency(%q<timecop>.freeze, [">= 0"])
+      s.add_dependency(%q<guard-rspec>.freeze, [">= 0"])
     end
   else
-    s.add_dependency(%q<activesupport>, [">= 3.0.0"])
-    s.add_dependency(%q<httparty>, [">= 0.10.0"])
-    s.add_dependency(%q<rspec>, [">= 0"])
-    s.add_dependency(%q<rr>, [">= 0"])
-    s.add_dependency(%q<webmock>, ["< 1.10"])
-    s.add_dependency(%q<vcr>, [">= 0"])
-    s.add_dependency(%q<rdoc>, [">= 0"])
-    s.add_dependency(%q<bundler>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<simplecov>, [">= 0"])
-    s.add_dependency(%q<awesome_print>, [">= 0"])
-    s.add_dependency(%q<timecop>, [">= 0"])
-    s.add_dependency(%q<guard-rspec>, [">= 0"])
+    s.add_dependency(%q<activesupport>.freeze, [">= 3.0.0"])
+    s.add_dependency(%q<httparty>.freeze, [">= 0.10.0"])
+    s.add_dependency(%q<rspec>.freeze, [">= 0"])
+    s.add_dependency(%q<rspec-its>.freeze, [">= 0"])
+    s.add_dependency(%q<rr>.freeze, [">= 0"])
+    s.add_dependency(%q<webmock>.freeze, ["< 1.10"])
+    s.add_dependency(%q<vcr>.freeze, [">= 0"])
+    s.add_dependency(%q<rdoc>.freeze, [">= 0"])
+    s.add_dependency(%q<bundler>.freeze, [">= 0"])
+    s.add_dependency(%q<jeweler>.freeze, [">= 0"])
+    s.add_dependency(%q<simplecov>.freeze, [">= 0"])
+    s.add_dependency(%q<awesome_print>.freeze, [">= 0"])
+    s.add_dependency(%q<timecop>.freeze, [">= 0"])
+    s.add_dependency(%q<guard-rspec>.freeze, [">= 0"])
   end
 end
-

@@ -10,7 +10,9 @@ gem "httparty", ">=0.10.0"
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem "rspec"
+  gem "rspec-its"
   gem "rr"
+  gem 'pry-nav'
   gem "webmock", '< 1.10'
   gem "vcr"
   gem "rdoc"

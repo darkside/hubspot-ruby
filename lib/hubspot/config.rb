@@ -5,6 +5,10 @@ module Hubspot
       attr_reader :base_url
       attr_reader :portal_id
 
+      def logger
+        @logger ||= Logger.new(STDOUT)
+      end
+
       def configure(config)
         config.stringify_keys!
         @hapikey = config["hapikey"]
@@ -21,7 +25,7 @@ module Hubspot
 
       def ensure!(*params)
         params.each do |p|
-          raise Hubspot::ConfigurationError.new("'#{p}' not configured") unless instance_variable_get "@#{p}"
+          raise ConfigurationError.new("'#{p}' not configured") unless instance_variable_get "@#{p}"
         end
       end
     end

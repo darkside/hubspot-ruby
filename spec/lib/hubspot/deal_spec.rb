@@ -73,8 +73,8 @@ describe Hubspot::Deal do
     it 'should remove from hubspot' do
       expect(Hubspot::Deal.find(deal.deal_id)).to_not be_nil
 
-      expect(deal.destroy!).to be_true
-      expect(deal.destroyed?).to be_true
+      expect(deal.destroy!).to be_truthy
+      expect(deal.destroyed?).to be_truthy
 
       expect(Hubspot::Deal.find(deal.deal_id)).to be_nil
     end

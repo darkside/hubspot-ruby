@@ -15,34 +15,30 @@ module Hubspot
     BLOG_POSTS_PATH = "/content/api/v2/blog-posts"
     GET_BLOG_BY_ID_PATH = "/content/api/v2/blogs/:blog_id"
 
+    delegate :connection, :get_json,
+      :post_json, :put_json, :delete_json, to: :class
+
     class << self
+      delegate :connection, to: Hubspot
+      delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
       # Lists the blogs
       # {https://developers.hubspot.com/docs/methods/blogv2/get_blogs}
       # No param filtering is currently implemented
       # @return [Hubspot::Blog, []] the first 20 blogs or empty_array
       def list
-        url = Hubspot::Utils.generate_url(BLOG_LIST_PATH)
-        resp = HTTParty.get(url, format: :json)
-        if resp.success?
-          resp.parsed_response['objects'].map do |blog_hash|
-            Blog.new(blog_hash)
-          end
-        else
-          []
-        end
+        response = get_json(BLOG_LIST_PATH)
+        response['objects'].map { |blog_hash| new blog_hash }
       end
 
       # Finds a specific blog by its ID
       # {https://developers.hubspot.com/docs/methods/blogv2/get_blogs_blog_id}
       # @return Hubspot::Blog or nil
       def find_by_id(id)
-        url = Hubspot::Utils.generate_url(GET_BLOG_BY_ID_PATH, blog_id: id)
-        resp = HTTParty.get(url, format: :json)
-        if resp.success?
-          Blog.new(resp.parsed_response)
-        else
-          nil
-        end
+        params   = { blog_id: id }
+        response = get_json(GET_BLOG_BY_ID_PATH, params: params)
+        new(response)
+      rescue ResourceNotFound
+        nil
       end
     end
 
@@ -75,32 +71,30 @@ module Hubspot
       raise InvalidParams.new('State parameter was invalid') unless [false, 'PUBLISHED', 'DRAFT'].include?(params[:state])
       params.each { |k, v| params.delete(k) if v == false }
 
-      url = Hubspot::Utils.generate_url(BLOG_POSTS_PATH, params)
-
-      resp = HTTParty.get(url, format: :json)
-      if resp.success?
-        blog_post_objects = resp.parsed_response['objects']
-        blog_post_objects.map do |blog_post_hash|
-          BlogPost.new(blog_post_hash)
-        end
-      else
-        []
-      end
+      response = get_json(BLOG_POSTS_PATH, params: params)
+      response['objects'].map { |h| new h }
     end
   end
 
   class BlogPost
     GET_BLOG_POST_BY_ID_PATH = "/content/api/v2/blog-posts/:blog_post_id"
+    delegate :connection, :get_json,
+      :post_json, :put_json, :delete_json, to: :class
 
-    # Returns a specific blog post by ID
-    # {https://developers.hubspot.com/docs/methods/blogv2/get_blog_posts_blog_post_id}
-    # @return [Hubspot::BlogPost] or nil
-    def self.find_by_blog_post_id(id)
-      url = Hubspot::Utils.generate_url(GET_BLOG_POST_BY_ID_PATH, blog_post_id: id)
-      resp = HTTParty.get(url, format: :json)
-      if resp.success?
-        BlogPost.new(resp.parsed_response)
-      else
+    class << self
+
+      delegate :camelize_hash, :hash_to_properties, :properties_to_hash, to: Utils
+      delegate :connection, to: Hubspot
+      delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
+
+      # Returns a specific blog post by ID
+      # {https://developers.hubspot.com/docs/methods/blogv2/get_blog_posts_blog_post_id}
+      # @return [Hubspot::BlogPost] or nil
+      def find_by_blog_post_id(id)
+        params = { blog_post_id: id }
+        response = get_json(GET_BLOG_POST_BY_ID_PATH, params: params)
+        new(response)
+      rescue ResourceNotFound
         nil
       end
     end

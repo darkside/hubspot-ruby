@@ -10,6 +10,8 @@ SimpleCov.start do
 end
 
 require 'rspec'
+require 'rspec/its'
+require 'pry'
 require 'webmock/rspec'
 require 'hubspot-ruby'
 require 'vcr'
