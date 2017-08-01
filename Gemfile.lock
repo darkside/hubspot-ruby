@@ -89,6 +89,8 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-nav (0.2.4)
+      pry (>= 0.9.10, < 0.11.0)
     psych (2.2.4)
     rack (2.0.3)
     rake (12.0.0)
@@ -143,6 +145,7 @@ DEPENDENCIES
   guard-rspec
   httparty (>= 0.10.0)
   jeweler
+  pry-nav
   rdoc
   rr
   rspec

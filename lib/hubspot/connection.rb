@@ -1,11 +1,10 @@
 module Hubspot
   class Connection
     include HTTParty
-
+    HEADERS = { 'Content-Type' => 'application/json' }
     NETWORK_ERRORS = [ServerError, BadGateway]
 
-    delegate :get, :put, :post, to: :class
-    delegate :logger, to: Hubspot::Config
+    delegate :logger, to: Config
 
     attr_accessor :retries
 
@@ -16,7 +15,7 @@ module Hubspot
     def get_json(path, params: {})
       retrying_network_errors do
         url = generate_url(path, params)
-        response = get(url, format: :json)
+        response = self.class.get(url, format: :json)
         handle_response(response)
       end
     end
@@ -25,8 +24,7 @@ module Hubspot
     def post_json(path, params: {}, body:)
       retrying_network_errors do
         url = generate_url(path, params)
-        response = post(url, body: body.to_json,
-          headers: { 'Content-Type' => 'application/json' }, format: :json)
+        response = self.class.post(url, body: body, headers: HEADERS, format: :json)
         handle_response(response)
       end
     end
@@ -34,8 +32,7 @@ module Hubspot
     def put_json(path, params: {}, body:)
       retrying_network_errors do
         url = generate_url(path, params)
-        response = put(url, body: body.to_json,
-          headers: { 'Content-Type' => 'application/json' }, format: :json)
+        response = self.class.put(url, body: body, headers: HEADERS, format: :json)
         handle_response(response)
       end
     end
@@ -43,7 +40,7 @@ module Hubspot
     def delete_json(path, params: {})
       retrying_network_errors do
         url = generate_url(path, params)
-        response = delete(url, format: :json)
+        response = self.class.delete(url, format: :json)
         handle_response(response)
       end
     end
@@ -114,7 +111,7 @@ module Hubspot
 
       if path =~ /:portal_id/
         Config.ensure! :portal_id
-        params["portal_id"] = Hubspot::Config.portal_id if path =~ /:portal_id/
+        params["portal_id"] = Config.portal_id if path =~ /:portal_id/
       end
 
       params.each do |k,v|

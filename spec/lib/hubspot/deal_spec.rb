@@ -14,8 +14,8 @@ describe Hubspot::Deal do
     its (:deal_id) { should == 3 }
   end
 
-  describe ".create!" do
-    cassette "deal_create"
+  describe ".create!", live: true do
+    # cassette "deal_create"
     subject { Hubspot::Deal.create!(62515, [8954037], [27136], {}) }
     its(:deal_id)     { should_not be_nil }
     its(:portal_id)   { should eql 62515 }
@@ -73,8 +73,8 @@ describe Hubspot::Deal do
     it 'should remove from hubspot' do
       expect(Hubspot::Deal.find(deal.deal_id)).to_not be_nil
 
-      expect(deal.destroy!).to be_true
-      expect(deal.destroyed?).to be_true
+      expect(deal.destroy!).to be_truthy
+      expect(deal.destroyed?).to be_truthy
 
       expect(Hubspot::Deal.find(deal.deal_id)).to be_nil
     end

@@ -16,8 +16,8 @@ module Hubspot
     DESTROY_CONTACT_PATH = "/contacts/v1/contact/vid/:contact_id"
     CONTACTS_PATH = "/contacts/v1/lists/all/contacts/all"
 
-    delegate :camelize_hash, :hash_to_properties, :connection, :get_json,
-      :post_json, :put_json, :delete_json, to: :class
+    delegate :camelize_hash, :hash_to_properties, :properties_to_hash,
+      :connection, :get_json, :post_json, :put_json, :delete_json, to: :class
 
     class << self
       delegate :camelize_hash, :hash_to_properties, :properties_to_hash, to: Utils
@@ -65,7 +65,7 @@ module Hubspot
       # @return [Hubspot::Contact, nil] the contact found or nil
       def find_by_utk(utk)
         params = { contact_utk: utk }
-        response = get_json(GET_CONTACT_BY_ID_PATH, params: params)
+        response = get_json(GET_CONTACT_BY_UTK_PATH, params: params)
         new(response)
       rescue ResourceNotFound
         nil
@@ -78,7 +78,6 @@ module Hubspot
       # @return [Hubspot::ContactCollection] the paginated collection of contacts
       def all(opts = {})
         params = opts.dup
-        url = Hubspot::Utils.generate_url(CONTACTS_PATH, opts)
         response = get_json(CONTACTS_PATH, params: params)
         response['contacts'].map{|h| new(h) }
       end

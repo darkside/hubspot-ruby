@@ -25,7 +25,7 @@ module Hubspot
 
       def ensure!(*params)
         params.each do |p|
-          raise Hubspot::ConfigurationError.new("'#{p}' not configured") unless instance_variable_get "@#{p}"
+          raise ConfigurationError.new("'#{p}' not configured") unless instance_variable_get "@#{p}"
         end
       end
     end

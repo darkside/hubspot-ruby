@@ -12,6 +12,7 @@ group :development do
   gem "rspec"
   gem "rspec-its"
   gem "rr"
+  gem 'pry-nav'
   gem "webmock", '< 1.10'
   gem "vcr"
   gem "rdoc"

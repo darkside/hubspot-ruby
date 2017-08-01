@@ -27,14 +27,14 @@ module Hubspot
         @company_ids = associations["associatedCompanyIds"]
         @vids = associations["associatedVids"]
       end
-      @properties = Hubspot::Utils.properties_to_hash(response_hash["properties"])
+      @properties = properties_to_hash(response_hash["properties"])
     end
 
-    delegate :camelize_hash, :hash_to_properties, :connection, :get_json,
+    delegate :camelize_hash, :hash_to_properties, :properties_to_hash, :connection, :get_json,
       :post_json, :put_json, :delete_json, to: :class
 
     class << self
-      delegate :camelize_hash, :hash_to_properties, to: Utils
+      delegate :camelize_hash, :hash_to_properties, :properties_to_hash, to: Utils
       delegate :connection, to: Hubspot
       delegate :get_json, :post_json, :put_json, :delete_json, to: :connection
 
@@ -42,36 +42,30 @@ module Hubspot
       # @raise [Hubspot::RequestError] if the response isn't a success
       # @return [Hubspot::Deal] the created deal
       def create!(portal_id, company_ids, vids, params={})
-        url = Hubspot::Utils.generate_url(CREATE_DEAL_PATH).concat("&portalId=#{portal_id}")
         associations_hash = {"portalId" => portal_id, "associations" => { "associatedCompanyIds" => company_ids, "associatedVids" => vids}}
-        post_data = associations_hash.merge({ properties: Hubspot::Utils.hash_to_properties(params, key_name: "name") })
-        resp = HTTParty.post(url, body: post_data.to_json, headers: {"Content-Type" => "application/json"})
-        raise(Hubspot::RequestError.new(resp, "Could not create deal.")) unless resp.success?
-        Hubspot::Deal.new(resp.parsed_response)
+        post_data = associations_hash.merge({ properties: hash_to_properties(params, key_name: "name") })
+        response = post_json(CREATE_DEAL_PATH, body: post_data)
+        new(response)
       end
 
       def update!(deal_id, params)
-        url = Hubspot::Utils.generate_url(DEAL_PATH, deal_id: deal_id)
-        post_data = { properties: Hubspot::Utils.hash_to_properties(params, key_name: "name") }
-        resp = HTTParty.put(url, body: post_data.to_json, headers: {"Content-Type" => "application/json"})
-        raise(Hubspot::RequestError.new(resp, "Could not update deal.")) unless resp.success?
-        new(resp.parsed_response)
+        _params = { deal_id: deal_id }
+        post_data = { properties: hash_to_properties(params, key_name: "name") }
+        response = put_json(DEAL_PATH, params: _params, body: post_data)
+        new(response)
       end
 
       def find(deal_id)
-        url = Hubspot::Utils.generate_url(DEAL_PATH, {deal_id: deal_id})
-        resp = HTTParty.get(url, format: :json)
-        if resp.success?
-          Hubspot::Deal.new(resp.parsed_response)
-        else
-          nil
-        end
+        _params = {deal_id: deal_id}
+        response = get_json(DEAL_PATH, params: _params)
+        new(response)
+      rescue ResourceNotFound
+        nil
       end
 
       def destroy!(deal_id)
-        url = Hubspot::Utils.generate_url(DEAL_PATH, {deal_id: deal_id})
-        request = HTTParty.delete(url, format: :json)
-        raise(Hubspot::RequestError.new(request)) unless request.success?
+        _params = { deal_id: deal_id }
+        response = delete_json(DEAL_PATH, params: _params)
         true
       end
 
@@ -80,13 +74,8 @@ module Hubspot
       # @param count [Integer] the amount of deals to return.
       # @param offset [Integer] pages back through recent contacts.
       def recent(opts = {})
-        url = Hubspot::Utils.generate_url(RECENT_UPDATED_PATH, opts)
-        request = HTTParty.get(url, format: :json)
-
-        raise(Hubspot::RequestError.new(request)) unless request.success?
-
-        found = request.parsed_response['results']
-        return found.map{|h| new(h) }
+        response = get_json(RECENT_UPDATED_PATH, params: opts)
+        response['results'].map { |h| new(h) }
       end
     end
 
