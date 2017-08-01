@@ -12,9 +12,21 @@ module Hubspot
       def configure(config)
         config.stringify_keys!
         @hapikey = config["hapikey"]
+        @sleep_on_network_errors = config["sleep_on_network_errors"] || false
+        @retry_on_network_errors = config["retry_on_network_errors"] || true
         @base_url = config["base_url"] || "https://api.hubapi.com"
         @portal_id = config["portal_id"]
         self
+      end
+
+      # Do we sleep when retrying on network errors? Good for background jobs,
+      # bad for web heads
+      def sleep_on_network_errors?
+        !! @sleep_on_network_errors
+      end
+
+      def retry_on_network_errors?
+        !! @retry_on_network_errors
       end
 
       def reset!
